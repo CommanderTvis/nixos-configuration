@@ -10,6 +10,8 @@
 }:
 
 let
+  main-user = "commandertvis";
+  host-name = "commandertvis-ms7a15";
   home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz";
 in
 {
@@ -47,16 +49,14 @@ in
     };
   };
 
-  networking.hostName = "commandertvis-ms7a15"; # Define your hostname.
+  networking.hostName = host-name;
+
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   time.timeZone = "Europe/Berlin";
-
-  i18n = {
-    defaultLocale = "en_US.UTF-8";
-  };
+  i18n.defaultLocale = "en_US.UTF-8";
 
   # console = {
   #   font = "Lat2-Terminus16";
@@ -91,8 +91,8 @@ in
     syncthing = {
       enable = true;
       group = "syncthing";
-      user = "commandertvis";
-      configDir = "/home/commandertvis/Documents/.config/syncthing";
+      user = main-user;
+      configDir = "/home/${main-user}/Documents/.config/syncthing";
     };
   };
 
@@ -111,10 +111,9 @@ in
     storageDriver = "btrfs";
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.commandertvis = {
+  users.users.${main-user} = {
     isNormalUser = true;
-    home = "/home/commandertvis";
+    home = "/home/${main-user}";
     extraGroups = [
       "wheel"
       "networkmanager"
@@ -135,7 +134,7 @@ in
     ];
   };
 
-  home-manager.users.commandertvis = {
+  home-manager.users.${main-user} = {
     programs.git = {
       enable = true;
       userName = "Iaroslav Postovalov";
@@ -168,7 +167,7 @@ in
   nix.settings = {
     trusted-users = [
       "root"
-      "commandertvis"
+      main-user
     ];
     allowed-users = [ "@wheel" ];
   };
@@ -208,7 +207,7 @@ in
       enable = true;
       # Certain features, including CLI integration and system authentication support,
       # require enabling PolKit integration on some desktop environments (e.g. Plasma).
-      polkitPolicyOwners = [ "commandertvis" ];
+      polkitPolicyOwners = [ main-user ];
     };
 
     partition-manager.enable = true;
@@ -241,7 +240,7 @@ in
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
-  # system.copySystemConfiguration = true;
+  system.copySystemConfiguration = true;
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
