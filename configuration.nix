@@ -13,6 +13,20 @@ let
   main-user = "commandertvis";
   host-name = "commandertvis-ms7a15";
   home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz";
+
+  outline-manager = pkgs.callPackage ({ appimageTools, fetchurl }:
+    let
+      pname = "outline-manager";
+      version = "1.17.0";
+      src = fetchurl {
+        url = "https://s3.amazonaws.com/outline-releases/manager/linux/${version}/1/Outline-Manager.AppImage";
+        hash = "sha256-dK44GouoXAWlIiPpZeXI86sILJ4AzlQEe3XwTPua9mc=";
+      };
+    in
+    appimageTools.wrapType2 {
+      inherit pname version src;
+    }
+  ) {};
 in
 {
   imports = [
@@ -72,7 +86,6 @@ in
     };
 
     libinput.enable = true;
-
     desktopManager.plasma6.enable = true;
 
     displayManager = {
@@ -94,6 +107,8 @@ in
       user = main-user;
       configDir = "/home/${main-user}/Documents/.config/syncthing";
     };
+
+    tailscale.enable = true;
   };
 
   environment.plasma6.excludePackages = with pkgs.kdePackages; [
@@ -131,6 +146,8 @@ in
       jetbrains-toolbox
       slack
       obsidian
+      appimage-run
+      outline-manager
     ];
   };
 
@@ -148,13 +165,14 @@ in
       };
     };
 
-    programs.ssh = {
-      enable = true;
-      extraConfig = ''
-        Host *
-            IdentityAgent ~/.1password/agent.sock
-      '';
-    };
+    # https://github.com/nix-community/home-manager/issues/322
+    # programs.ssh = {
+    #   enable = true;
+    #   extraConfig = ''
+    #     Host *
+    #         IdentityAgent ~/.1password/agent.sock
+    #   '';
+    # };
 
     # The home.stateVersion option does not have a default and must be set
     home.stateVersion = "24.11";
@@ -189,6 +207,7 @@ in
     git
     syncthing
     btrfs-assistant
+    file
   ];
 
   environment.sessionVariables = {
