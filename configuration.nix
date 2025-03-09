@@ -14,7 +14,8 @@ let
   host-name = "commandertvis-ms7a15";
   home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz";
 
-  outline-manager = pkgs.callPackage ({ appimageTools, fetchurl }:
+  outline-manager = pkgs.callPackage (
+    { appimageTools, fetchurl }:
     let
       pname = "outline-manager";
       version = "1.17.0";
@@ -22,11 +23,23 @@ let
         url = "https://s3.amazonaws.com/outline-releases/manager/linux/${version}/1/Outline-Manager.AppImage";
         hash = "sha256-dK44GouoXAWlIiPpZeXI86sILJ4AzlQEe3XwTPua9mc=";
       };
+
+      appimageContents = appimageTools.extract {
+        inherit pname version src;
+      };
     in
     appimageTools.wrapType2 {
       inherit pname version src;
+
+      extraInstallCommands = ''
+        install -m 444 -D ${appimageContents}/@outlineserver_manager.desktop $out/share/applications/@outlineserver_manager.desktop
+        install -m 444 -D ${appimageContents}/usr/share/icons/hicolor/512x512/apps/@outlineserver_manager.png \
+          $out/share/icons/hicolor/512x512/apps/@outlineserver_manager.png
+        substituteInPlace $out/share/applications/@outlineserver_manager.desktop \
+          --replace-fail 'Exec=AppRun' 'Exec=${pname}'
+      '';
     }
-  ) {};
+  ) { };
 in
 {
   imports = [
@@ -109,10 +122,18 @@ in
     };
 
     tailscale.enable = true;
+    openssh = {
+      enable = true;
+      settings = {
+        PasswordAuthentication = false;
+        KbdInteractiveAuthentication = false;
+        PermitRootLogin = "no";
+        UsePAM = false;
+      };
+    };
   };
 
   environment.plasma6.excludePackages = with pkgs.kdePackages; [
-    konsole
     elisa
     kate
     khelpcenter
@@ -148,6 +169,12 @@ in
       obsidian
       appimage-run
       outline-manager
+      prismlauncher
+      libreoffice-qt6
+    ];
+
+    openssh.authorizedKeys.keyFiles = [
+      /etc/nixos/ssh/authorized_keys
     ];
   };
 
