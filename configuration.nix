@@ -47,20 +47,16 @@ in
     (import "${home-manager}/nixos")
   ];
 
-  boot = {
-    loader = {
-      efi.canTouchEfiVariables = true;
+  boot.loader = {
+    efi.canTouchEfiVariables = true;
 
-      grub = {
-        enable = true;
-        device = "nodev";
-        efiSupport = true;
-      };
-
-      systemd-boot.enable = false;
+    grub = {
+      enable = true;
+      device = "nodev";
+      efiSupport = true;
     };
 
-    kernelPackages = pkgs.linuxPackages_6_11;
+    systemd-boot.enable = false;
   };
 
   hardware = {
@@ -122,6 +118,7 @@ in
     };
 
     tailscale.enable = true;
+
     openssh = {
       enable = true;
       settings = {
@@ -171,6 +168,7 @@ in
       outline-manager
       prismlauncher
       libreoffice-qt6
+      zoom-us
     ];
 
     openssh.authorizedKeys.keyFiles = [
@@ -179,16 +177,21 @@ in
   };
 
   home-manager.users.${main-user} = {
-    programs.git = {
-      enable = true;
-      userName = "Iaroslav Postovalov";
-      userEmail = "postovalovya@gmail.com";
+    programs = {
+      git = {
+        enable = true;
+        userName = "Iaroslav Postovalov";
+        userEmail = "postovalovya@gmail.com";
 
-      extraConfig = {
-        commit.gpgsign = true;
-        gpg.format = "ssh";
-        user.signingkey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCbMhHoSjO/LGw3JLezQGEH5ER/UyXe1roHQRck5jMwyBT8OipCUaWr4wMKz2a2Ta4sjTHqyB3Xv9N/IDarGzIk9yBh5a16eLk3CgfaMP5ts/arSLMN58UjRvroHrC+gyxvzpCFlkzKaEd2qEWh3wp+vcJOZ1WsbyBaUnT5dFEAwsVLTzj7s0cLTJFmE6RZILNx2LmOng1Jajb4JfxX05oiuiMqN//Lb6ynHeTwCPzf164HoHZTnfWgpwhrsxgNUEFOsji/9mlOQiS5dKxTpeVHqzUv0XJHMTmcZFQx52GixJg/7LcVS5vp9FsRL+vu5y4yPgWPAGd/GTCNjSU6M1TxYMKnLjWEtYL/UFjhYO0Tf8FpT0B7cJ1ktD5SKr3HKVEkgXv/CisuK29Co8DBsVP9xE1WDyhABhUl7kW5NjuZjV1+gCh12QcfhmoWVoBSvP5W9nEcAWPJuTimwbIIEx6iwoogEoYBEVNoVtM5vhv0ULO7Zh9cr6CoGOQpsyLLzvY9zAl4voN8Tw20z0ypcNTq78rUsLEw+5WZU2ykgdTvPksvynCZ2vSwaFe96LMd05XgQeZgDwmslghCSljtSmnseUepLOxE+l3fzHhvAgOX4P5tw3Zp1Iwi3uA1jKeNQGxuMuWFvIk4tu0JUCB9mPZ7FG8TT2qjNx6bGx43M8AtQw==";
-        "gpg \"ssh\"".program = "${lib.getExe' pkgs._1password-gui "op-ssh-sign"}";
+        extraConfig = {
+          commit.gpgsign = true;
+          gpg.format = "ssh";
+          user.signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhrNPHMWPV7gGuPheIX4POXrlPNNL2h/KMAJsAuSA0W";
+          "gpg \"ssh\"".program = "${lib.getExe' pkgs._1password-gui "op-ssh-sign"}";
+        };
+      };
+      gpg = {
+        enable = true;
       };
     };
 
@@ -249,6 +252,7 @@ in
 
   programs = {
     _1password.enable = true;
+
     _1password-gui = {
       enable = true;
       # Certain features, including CLI integration and system authentication support,
@@ -256,7 +260,19 @@ in
       polkitPolicyOwners = [ main-user ];
     };
 
+    gnupg.agent = {
+      enable = true;
+      enableSSHSupport = true;
+    };
+
     partition-manager.enable = true;
+
+    steam = {
+      enable = true;
+      #      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+      #      dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+      #      localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+    };
   };
 
   environment.etc = {
