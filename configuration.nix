@@ -94,6 +94,13 @@ in
   networking = {
     hostName = host-name;
     networkmanager.enable = true;
+
+    # List services that you want to enable:
+
+    # Open ports in the firewall.
+    # firewall.allowedTCPPorts = [ ... ];
+    # firewall.allowedUDPPorts = [ ... ];
+    firewall.enable = false;
   };
 
   time.timeZone = "Europe/Berlin";
@@ -193,6 +200,7 @@ in
     btrfs-assistant
     file
     jetbrains-mono
+    docker-compose
   ];
 
   environment = {
@@ -220,11 +228,6 @@ in
       polkitPolicyOwners = [ main-user ];
     };
 
-    gnupg.agent = {
-      enable = true;
-      enableSSHSupport = true;
-    };
-
     partition-manager.enable = true;
 
     steam = {
@@ -232,6 +235,15 @@ in
       # remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
       # dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
       # localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+    };
+
+    # Some programs need SUID wrappers, can be configured further or are
+    # started in user sessions.
+    # mtr.enable = true;
+
+    gnupg.agent = {
+      enable = true;
+      enableSSHSupport = true;
     };
   };
 
@@ -305,21 +317,6 @@ in
     # The home.stateVersion option does not have a default and must be set
     home.stateVersion = "24.11";
   };
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  networking.firewall.enable = false;
 
   system = {
     autoUpgrade.channel = "https://nixos.org/channels/nixos-24.11/";
