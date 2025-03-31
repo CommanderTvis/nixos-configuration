@@ -188,7 +188,7 @@ in
     wget
     tree
     unstable.vscode
-    vivaldi
+    unstable.vivaldi
     yakuake
     neofetch
     nixfmt-rfc-style
@@ -262,8 +262,8 @@ in
     ];
 
     packages = with pkgs; [
-      telegram-desktop
-      discord
+      unstable.telegram-desktop
+      unstable.discord
       anki-bin
       qdirstat
       gimp
