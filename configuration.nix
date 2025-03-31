@@ -18,6 +18,10 @@ let
     builtins.fetchGit { url = "https://github.com/tadfisher/android-nixpkgs.git"; }
   )) { channel = "stable"; };
 
+  unstable = import
+    (builtins.fetchTarball https://github.com/nixos/nixpkgs/tarball/nixos-unstable)
+    { config = config.nixpkgs.config; };
+
   android-sdk = android-nixpkgs.sdk (
     sdkPkgs: with sdkPkgs; [
       cmdline-tools-latest
@@ -35,19 +39,17 @@ let
     ]
   );
 
-  outline-manager = pkgs.callPackage (
-    { appimageTools, fetchurl }:
+  outline-manager =
     let
       pname = "outline-manager";
       version = "1.17.0";
-      src = fetchurl {
+      src = pkgs.fetchurl {
         url = "https://s3.amazonaws.com/outline-releases/manager/linux/${version}/1/Outline-Manager.AppImage";
         hash = "sha256-dK44GouoXAWlIiPpZeXI86sILJ4AzlQEe3XwTPua9mc=";
       };
-
-      appimageContents = appimageTools.extract { inherit pname version src; };
+      appimageContents = pkgs.appimageTools.extract { inherit pname version src; };
     in
-    appimageTools.wrapType2 {
+    pkgs.appimageTools.wrapType2 {
       inherit pname version src;
 
       extraInstallCommands = ''
@@ -57,8 +59,7 @@ let
         substituteInPlace $out/share/applications/@outlineserver_manager.desktop \
           --replace-fail 'Exec=AppRun' 'Exec=${pname}'
       '';
-    }
-  ) { };
+    };
 in
 {
   imports = [
@@ -186,7 +187,7 @@ in
   environment.systemPackages = with pkgs; [
     wget
     tree
-    vscode
+    unstable.vscode
     vivaldi
     yakuake
     neofetch
@@ -266,7 +267,7 @@ in
       anki-bin
       qdirstat
       gimp
-      jetbrains-toolbox
+      unstable.jetbrains-toolbox
       slack
       obsidian
       appimage-run
@@ -280,7 +281,7 @@ in
       nodejs_23
       mpv
       teams-for-linux
-      poetry
+      unstable.poetry
     ];
 
     openssh.authorizedKeys.keyFiles = [ /etc/nixos/ssh/authorized_keys ];
@@ -294,6 +295,7 @@ in
         userEmail = "postovalovya@gmail.com";
 
         extraConfig = {
+          core.autocrlf = true;
           commit.gpgsign = true;
           gpg.format = "ssh";
           user.signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhrNPHMWPV7gGuPheIX4POXrlPNNL2h/KMAJsAuSA0W";
