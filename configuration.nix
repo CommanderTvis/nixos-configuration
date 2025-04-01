@@ -18,9 +18,12 @@ let
     builtins.fetchGit { url = "https://github.com/tadfisher/android-nixpkgs.git"; }
   )) { channel = "stable"; };
 
-  unstable = import
-    (builtins.fetchTarball https://github.com/nixos/nixpkgs/tarball/nixos-unstable)
-    { config = config.nixpkgs.config; };
+  unstable =
+    import (builtins.fetchTarball "https://github.com/nixos/nixpkgs/tarball/nixos-unstable")
+      {
+        config = config.nixpkgs.config;
+        overlays = config.nixpkgs.overlays;
+      };
 
   android-sdk = android-nixpkgs.sdk (
     sdkPkgs: with sdkPkgs; [
@@ -182,7 +185,55 @@ in
     };
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs = {
+    config.allowUnfree = true;
+
+    overlays = [
+      (self: super: rec {
+        pythonldlibpath = lib.makeLibraryPath (
+          with super;
+          [
+            zlib
+            zstd
+            stdenv.cc.cc
+            stdenv.cc.cc.lib
+            curl
+            openssl
+            attr
+            libssh
+            bzip2
+            libxml2
+            acl
+            libsodium
+            util-linux
+            xz
+            systemd
+          ]
+        );
+        python = super.stdenv.mkDerivation {
+          name = "python";
+          buildInputs = [ super.makeWrapper ];
+          src = super.python311;
+          installPhase = ''
+            mkdir -p $out/bin
+            cp -r $src/* $out/
+            wrapProgram $out/bin/python3 --set LD_LIBRARY_PATH ${pythonldlibpath}
+            wrapProgram $out/bin/python3.11 --set LD_LIBRARY_PATH ${pythonldlibpath}
+          '';
+        };
+        poetry = super.stdenv.mkDerivation {
+          name = "poetry";
+          buildInputs = [ super.makeWrapper ];
+          src = super.poetry;
+          installPhase = ''
+            mkdir -p $out/bin
+            cp -r $src/* $out/
+            wrapProgram $out/bin/poetry --set LD_LIBRARY_PATH ${pythonldlibpath}
+          '';
+        };
+      })
+    ];
+  };
 
   environment.systemPackages = with pkgs; [
     wget
