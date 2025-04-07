@@ -16,19 +16,25 @@
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/ea900b21-657a-4030-a596-9106e2a6f4e5";
       fsType = "btrfs";
-      options = [ "subvol=@/@nixos" ];
+      options = [ "subvol=@/@nixos" "noatime" ];
     };
 
   fileSystems."/home" =
     { device = "/dev/disk/by-uuid/ea900b21-657a-4030-a596-9106e2a6f4e5";
       fsType = "btrfs";
-      options = [ "subvol=@/@nixos-home" ];
+      options = [ "subvol=@/@nixos-home" "noatime" ];
     };
 
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/F7A5-0DC9";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
+    };
+
+  fileSystems."/var/lib/docker/btrfs" =
+    { device = "/home/@/@nixos/var/lib/docker/btrfs";
+      fsType = "none";
+      options = [ "bind" ];
     };
 
   swapDevices = [ ];
@@ -38,7 +44,11 @@
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
+  # networking.interfaces.br-48964fa2c16d.useDHCP = lib.mkDefault true;
+  # networking.interfaces.br-86479f517791.useDHCP = lib.mkDefault true;
+  # networking.interfaces.docker0.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp2s0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.tailscale0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlp3s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
