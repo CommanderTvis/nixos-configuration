@@ -324,7 +324,7 @@ in
     packages = with pkgs; [
       unstable.telegram-desktop
       unstable.discord
-      anki-bin
+      unstable.anki-bin
       qdirstat
       gimp
       unstable.jetbrains-toolbox
