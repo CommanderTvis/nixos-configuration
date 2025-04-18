@@ -167,8 +167,6 @@ in
     storageDriver = "btrfs";
   };
 
-  zramSwap.enable = true;
-
   nix = {
     extraOptions = ''
       experimental-features = nix-command
