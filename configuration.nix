@@ -329,7 +329,7 @@ in
       gimp
       unstable.jetbrains-toolbox
       slack
-      obsidian
+      unstable.obsidian
       appimage-run
       outline-manager
       prismlauncher
