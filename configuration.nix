@@ -151,6 +151,8 @@ in
     udev.packages = [ pkgs.android-udev-rules ];
   };
 
+  systemd.services.syncthing.environment.STNODEFAULTFOLDER = "true"; # Don't create default ~/Sync folder
+
   environment.plasma6.excludePackages = with pkgs.kdePackages; [
     elisa
     kate
@@ -332,7 +334,7 @@ in
       outline-manager
       prismlauncher
       libreoffice-qt6
-      zoom-us
+      unstable.zoom-us
       yt-dlp
       android-sdk
       yarn
