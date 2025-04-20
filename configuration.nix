@@ -184,18 +184,21 @@ in
   };
 
   nixpkgs = {
-    config.allowUnfree = true;
+    config = {
+      allowUnfree = true;
 
-    config.packageOverrides = pkgs: {
-      linuxPackages = pkgs.linuxPackages.extend (
-        self: super: {
-          nvidia_x11_beta = super.nvidia_x11_beta // {
-            settings = super.nvidia_x11_beta.settings.overrideAttrs (old: {
-              buildInputs = old.buildInputs ++ [ pkgs.dbus.dev ];
-            });
-          };
-        }
-      );
+      # https://unix.stackexchange.com/questions/386572/nixos-build-error-dbus-dbus-h-not-found
+      # packageOverrides = pkgs: {
+      #   linuxPackages = pkgs.linuxPackages.extend (
+      #     self: super: {
+      #       nvidia_x11_beta = super.nvidia_x11_beta // {
+      #         settings = super.nvidia_x11_beta.settings.overrideAttrs (old: {
+      #           buildInputs = old.buildInputs ++ [ pkgs.dbus.dev ];
+      #         });
+      #       };
+      #     }
+      #   );
+      # };
     };
 
     overlays = [
@@ -223,18 +226,18 @@ in
         python = super.stdenv.mkDerivation {
           name = "python";
           buildInputs = [ super.makeWrapper ];
-          src = super.python311;
+          src = super.python313;
           installPhase = ''
             mkdir -p $out/bin
             cp -r $src/* $out/
             wrapProgram $out/bin/python3 --set LD_LIBRARY_PATH ${pythonldlibpath}
-            wrapProgram $out/bin/python3.11 --set LD_LIBRARY_PATH ${pythonldlibpath}
+            wrapProgram $out/bin/python3.13 --set LD_LIBRARY_PATH ${pythonldlibpath}
           '';
         };
         poetry = super.stdenv.mkDerivation {
           name = "poetry";
           buildInputs = [ super.makeWrapper ];
-          src = super.poetry;
+          src = super.poetry.override { python3 = super.python313; };
           installPhase = ''
             mkdir -p $out/bin
             cp -r $src/* $out/
@@ -263,7 +266,6 @@ in
     file
     jetbrains-mono
     docker-compose
-    dbus
   ];
 
   environment = {
