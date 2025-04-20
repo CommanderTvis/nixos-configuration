@@ -70,6 +70,20 @@ in
     (import "${home-manager}/nixos")
   ];
 
+  fileSystems."/" = {
+    options = [
+      "subvol=@/@nixos"
+      "noatime"
+    ];
+  };
+
+  fileSystems."/home" = {
+    options = [
+      "subvol=@/@nixos-home"
+      "noatime"
+    ];
+  };
+
   boot.loader = {
     efi.canTouchEfiVariables = true;
 

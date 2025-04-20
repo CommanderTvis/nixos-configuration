@@ -16,25 +16,25 @@
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/ea900b21-657a-4030-a596-9106e2a6f4e5";
       fsType = "btrfs";
-      options = [ "subvol=@/@nixos" "noatime" ];
+      options = [ "subvol=@/@nixos" ];
     };
 
   fileSystems."/home" =
     { device = "/dev/disk/by-uuid/ea900b21-657a-4030-a596-9106e2a6f4e5";
       fsType = "btrfs";
-      options = [ "subvol=@/@nixos-home" "noatime" ];
+      options = [ "subvol=@/@nixos-home" ];
+    };
+
+  fileSystems."/var/lib/docker/btrfs" =
+    { device = "/home/@/@nixos-home/@/@nixos/var/lib/docker/btrfs";
+      fsType = "none";
+      options = [ "bind" ];
     };
 
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/F7A5-0DC9";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
-    };
-
-  fileSystems."/var/lib/docker/btrfs" =
-    { device = "/home/@/@nixos/var/lib/docker/btrfs";
-      fsType = "none";
-      options = [ "bind" ];
     };
 
   swapDevices = [ ];
