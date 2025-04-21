@@ -356,6 +356,7 @@ in
       mpv
       teams-for-linux
       unstable.poetry
+      unstable.black
     ];
 
     openssh.authorizedKeys.keyFiles = [ /etc/nixos/ssh/authorized_keys ];
