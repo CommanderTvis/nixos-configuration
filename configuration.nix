@@ -357,6 +357,8 @@ in
       teams-for-linux
       unstable.poetry
       unstable.black
+      zulip
+      unstable.maven
     ];
 
     openssh.authorizedKeys.keyFiles = [ /etc/nixos/ssh/authorized_keys ];
