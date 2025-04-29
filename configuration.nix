@@ -359,6 +359,7 @@ in
       unstable.black
       zulip
       unstable.maven
+      postgresql
     ];
 
     openssh.authorizedKeys.keyFiles = [ /etc/nixos/ssh/authorized_keys ];
