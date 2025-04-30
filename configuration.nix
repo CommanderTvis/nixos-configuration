@@ -373,7 +373,7 @@ in
         userEmail = "postovalovya@gmail.com";
 
         extraConfig = {
-          core.autocrlf = false;
+          core.autocrlf = "input";
           commit.gpgsign = true;
           gpg.format = "ssh";
           user.signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhrNPHMWPV7gGuPheIX4POXrlPNNL2h/KMAJsAuSA0W";
