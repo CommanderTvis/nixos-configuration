@@ -163,6 +163,9 @@ in
     };
 
     udev.packages = [ pkgs.android-udev-rules ];
+
+    # Enable CUPS to print documents.
+    printing.enable = true;
   };
 
   systemd.services.syncthing.environment.STNODEFAULTFOLDER = "true"; # Don't create default ~/Sync folder
@@ -172,9 +175,6 @@ in
     kate
     khelpcenter
   ];
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
 
   virtualisation.docker = {
     enable = true;
@@ -237,17 +237,6 @@ in
             systemd
           ]
         );
-        python = super.stdenv.mkDerivation {
-          name = "python";
-          buildInputs = [ super.makeWrapper ];
-          src = super.python313;
-          installPhase = ''
-            mkdir -p $out/bin
-            cp -r $src/* $out/
-            wrapProgram $out/bin/python3 --set LD_LIBRARY_PATH ${pythonldlibpath}
-            wrapProgram $out/bin/python3.13 --set LD_LIBRARY_PATH ${pythonldlibpath}
-          '';
-        };
         poetry = super.stdenv.mkDerivation {
           name = "poetry";
           buildInputs = [ super.makeWrapper ];
@@ -258,6 +247,16 @@ in
             wrapProgram $out/bin/poetry --set LD_LIBRARY_PATH ${pythonldlibpath}
           '';
         };
+        uv = super.stdenv.mkDerivation {
+          name = "uv";
+          buildInputs = [ super.makeWrapper ];
+          src = super.uv;
+          installPhase = ''
+            mkdir -p $out/bin
+            cp -r $src/* $out/
+            wrapProgram $out/bin/uv --set LD_LIBRARY_PATH ${pythonldlibpath}
+          '';
+        };
       })
     ];
   };
@@ -266,7 +265,7 @@ in
     wget
     tree
     unstable.vscode
-    unstable.vivaldi
+    unstable.brave
     yakuake
     neofetch
     nixfmt-rfc-style
@@ -290,7 +289,7 @@ in
       ANDROID_SDK_ROOT = "${android-sdk}/share/android-sdk";
     };
     etc."1password/custom_allowed_browsers" = {
-      text = "vivaldi-bin";
+      text = "brave";
       mode = "0755";
     };
   };
@@ -309,12 +308,12 @@ in
 
     partition-manager.enable = true;
 
-    steam = {
-      enable = true;
-      # remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-      # dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-      # localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
-    };
+    #steam = {
+    #  enable = true;
+    #  # remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    #  # dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    #  # localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+    #};
 
     gnupg.agent = {
       enable = true;
@@ -336,13 +335,15 @@ in
     ];
 
     packages = with pkgs; [
-      unstable.telegram-desktop
-      unstable.discord
+      telegram-desktop
+      # unstable.discord
       unstable.anki-bin
+      texlive.combined.scheme-medium
+      
       qdirstat
       gimp
       unstable.jetbrains-toolbox
-      slack
+      # slack
       unstable.obsidian
       appimage-run
       outline-manager
@@ -350,15 +351,15 @@ in
       libreoffice-qt6
       unstable.zoom-us
       yt-dlp
-      android-sdk
-      yarn
-      nodejs_23
       mpv
-      teams-for-linux
+
+      unstable.yarn
+      unstable.nodejs_24
       unstable.poetry
+      unstable.uv
       unstable.black
-      zulip
       unstable.maven
+      android-sdk
       postgresql
     ];
 
