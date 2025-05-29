@@ -12,7 +12,9 @@
 let
   main-user = "commandertvis";
   host-name = "commandertvis-ms7a15";
-  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz";
+
+  channel = "https://nixos.org/channels/nixos-25.05/";
+  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz";
 
   android-nixpkgs = pkgs.callPackage (import (
     builtins.fetchGit { url = "https://github.com/tadfisher/android-nixpkgs.git"; }
@@ -198,22 +200,7 @@ in
   };
 
   nixpkgs = {
-    config = {
-      allowUnfree = true;
-
-      # https://unix.stackexchange.com/questions/386572/nixos-build-error-dbus-dbus-h-not-found
-      # packageOverrides = pkgs: {
-      #   linuxPackages = pkgs.linuxPackages.extend (
-      #     self: super: {
-      #       nvidia_x11_beta = super.nvidia_x11_beta // {
-      #         settings = super.nvidia_x11_beta.settings.overrideAttrs (old: {
-      #           buildInputs = old.buildInputs ++ [ pkgs.dbus.dev ];
-      #         });
-      #       };
-      #     }
-      #   );
-      # };
-    };
+    config.allowUnfree = true;
 
     overlays = [
       (self: super: rec {
@@ -266,7 +253,7 @@ in
     tree
     unstable.vscode
     unstable.brave
-    yakuake
+    kdePackages.yakuake
     neofetch
     nixfmt-rfc-style
     nil
@@ -337,9 +324,9 @@ in
     packages = with pkgs; [
       telegram-desktop
       # unstable.discord
-      unstable.anki-bin
+      anki-bin
       texlive.combined.scheme-medium
-      
+
       qdirstat
       gimp
       unstable.jetbrains-toolbox
@@ -357,10 +344,12 @@ in
       unstable.nodejs_24
       unstable.poetry
       unstable.uv
-      unstable.black
       unstable.maven
       android-sdk
-      postgresql
+      unstable.postgresql
+      clangStdenv
+      clang
+      clang-tools
     ];
 
     openssh.authorizedKeys.keyFiles = [ /etc/nixos/ssh/authorized_keys ];
@@ -400,7 +389,10 @@ in
   };
 
   system = {
-    autoUpgrade.channel = "https://nixos.org/channels/nixos-24.11/";
+    autoUpgrade = {
+      enable = true;
+      channel = channel;
+    };
 
     # Copy the NixOS configuration file and link it from the resulting system
     # (/run/current-system/configuration.nix). This is useful in case you
